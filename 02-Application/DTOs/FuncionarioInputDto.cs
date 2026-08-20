@@ -15,7 +15,7 @@ namespace _02_Application.DTOs
         [Required(ErrorMessage = "O cargo é obrigatório.")]
         public string Cargo { get; set; } = string.Empty;
 
-        [Range(typeof(decimal), "0.01", "999999999.99", ErrorMessage = "O salário deve ser maior que zero.")]
+        [Range(typeof(decimal), "0,01", "999999999,99", ErrorMessage = "O salário deve ser maior que zero.")]
         public decimal Salario { get; set; }
 
         [Required(ErrorMessage = "O departamento é obrigatório.")]
