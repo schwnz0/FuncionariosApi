@@ -20,5 +20,8 @@ namespace _02_Application.DTOs
 
         [Required(ErrorMessage = "O departamento é obrigatório.")]
         public string Departamento { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "O status de ativo é obrigatório.")]
+        public bool Ativo { get; set; } = true;
     }
 }

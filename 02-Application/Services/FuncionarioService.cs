@@ -10,84 +10,96 @@ using System.Threading.Tasks;
 
 namespace _02_Application.Services
 {
-    public class FuncionarioService : IFuncionarioService
-    {
-        private readonly IFuncionarioRepository _funcionarioRepository;
+      public class FuncionarioService : IFuncionarioService
+      {
+            private readonly IFuncionarioRepository _repository;
 
-        public FuncionarioService(IFuncionarioRepository funcionarioRepository)
-        {
-            _funcionarioRepository = funcionarioRepository;
-        }
+            public FuncionarioService(IFuncionarioRepository repository)
+            {
+                _repository = repository;
+            }
 
-        public async Task<IEnumerable<FuncionarioOutputDto>> GetAllAsync()
-        {
-            var funcionarios = await _funcionarioRepository.GetAllAsync();
-            return funcionarios
-                .Select(f => new FuncionarioOutputDto
+            public async Task<IEnumerable<FuncionarioOutputDto>> GetAllAsync()
+            {
+                var funcionarios = await _repository.GetAllAsync();
+                return funcionarios.Select(f => new FuncionarioOutputDto
                 {
                     Id = f.Id,
+                    Nome = f.Nome,
+                    Cargo = f.Cargo,
+                    Salario = f.Salario,
+                    Departamento = f.Departamento,
                     Ativo = f.Ativo
-                })
-                .ToList();
-        }
+                });
+            }
 
-        public async Task<FuncionarioOutputDto?> GetByIdAsync(int id)
-        {
-            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
-            if (funcionario == null)
-                return null;
-
-            return new FuncionarioOutputDto
+            public async Task<FuncionarioOutputDto?> GetByIdAsync(int id)
             {
-                Id = funcionario.Id,
-                Ativo = funcionario.Ativo
-            };
-        }
+                var funcionario = await _repository.GetByIdAsync(id);
+                if (funcionario == null)
+                    throw new KeyNotFoundException($"Funcionário com ID {id} não encontrado.");
 
-        public async Task<FuncionarioOutputDto> CreateAsync(FuncionarioInputDto dto)
-        {
-            var funcionario = new Funcionario
+                return new FuncionarioOutputDto
+                {
+                    Id = funcionario.Id,
+                    Nome = funcionario.Nome,
+                    Cargo = funcionario.Cargo,
+                    Salario = funcionario.Salario,
+                    Departamento = funcionario.Departamento,
+                    Ativo = funcionario.Ativo
+                };
+            }
+
+            public async Task<FuncionarioOutputDto> CreateAsync(FuncionarioInputDto dto)
             {
-                Nome = dto.Nome,
-                Cargo = dto.Cargo,
-                Salario = dto.Salario,
-                Departamento = dto.Departamento
-            };
+                var funcionario = new Funcionario
+                {
+                    Nome = dto.Nome,
+                    Cargo = dto.Cargo,
+                    Salario = dto.Salario,
+                    Departamento = dto.Departamento,
+                    Ativo = dto.Ativo
+                };
 
-            await _funcionarioRepository.AddAsync(funcionario);
-            await _funcionarioRepository.SaveChangesAsync();
+                await _repository.AddAsync(funcionario);
+                await _repository.SaveChangesAsync();
 
-            return new FuncionarioOutputDto
+                return new FuncionarioOutputDto
+                {
+                    Id = funcionario.Id,
+                    Nome = funcionario.Nome,
+                    Cargo = funcionario.Cargo,
+                    Salario = funcionario.Salario,
+                    Departamento = funcionario.Departamento,
+                    Ativo = funcionario.Ativo
+                };
+            }
+
+            public async Task UpdateAsync(int id, FuncionarioInputDto dto)
             {
-                Id = funcionario.Id,
-                Ativo = funcionario.Ativo
-            };
-        }
+                var funcionario = await _repository.GetByIdAsync(id);
+                if (funcionario == null)
+                    throw new KeyNotFoundException($"Funcionário com ID {id} não encontrado.");
 
-        public async Task UpdateAsync(int id, FuncionarioInputDto dto)
-        {
-            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
-            if (funcionario == null)
-                throw new KeyNotFoundException($"Funcionário com id {id} não encontrado.");
+                funcionario.Nome = dto.Nome;
+                funcionario.Cargo = dto.Cargo;
+                funcionario.Salario = dto.Salario;
+                funcionario.Departamento = dto.Departamento;
+                funcionario.Ativo = dto.Ativo;
 
-            funcionario.Nome = dto.Nome;
-            funcionario.Cargo = dto.Cargo;
-            funcionario.Salario = dto.Salario;
-            funcionario.Departamento = dto.Departamento;
+                _repository.Update(funcionario);
+                await _repository.SaveChangesAsync();
+            }
 
-            _funcionarioRepository.Update(funcionario);
-            await _funcionarioRepository.SaveChangesAsync();
-        }
+            public async Task DeleteAsync(int id)
+            {
+                var funcionario = await _repository.GetByIdAsync(id);
+                if (funcionario == null)
+                    throw new KeyNotFoundException($"Funcionário com ID {id} não encontrado.");
 
-        public async Task DeleteAsync(int id)
-        {
-            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
-            if (funcionario == null)
-                throw new KeyNotFoundException($"Funcionário com id {id} não encontrado.");
-
-            _funcionarioRepository.Delete(funcionario);
-            await _funcionarioRepository.SaveChangesAsync();
-        }
-    }
+                _repository.Delete(funcionario);
+                await _repository.SaveChangesAsync();
+            }
+      }
+    
 }
-
