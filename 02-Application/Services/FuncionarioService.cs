@@ -10,13 +10,38 @@ using System.Threading.Tasks;
 
 namespace _02_Application.Services
 {
-    public class FuncionarioService : IFuncionarioService 
+    public class FuncionarioService : IFuncionarioService
     {
         private readonly IFuncionarioRepository _funcionarioRepository;
 
         public FuncionarioService(IFuncionarioRepository funcionarioRepository)
         {
             _funcionarioRepository = funcionarioRepository;
+        }
+
+        public async Task<IEnumerable<FuncionarioOutputDto>> GetAllAsync()
+        {
+            var funcionarios = await _funcionarioRepository.GetAllAsync();
+            return funcionarios
+                .Select(f => new FuncionarioOutputDto
+                {
+                    Id = f.Id,
+                    Ativo = f.Ativo
+                })
+                .ToList();
+        }
+
+        public async Task<FuncionarioOutputDto?> GetByIdAsync(int id)
+        {
+            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
+            if (funcionario == null)
+                return null;
+
+            return new FuncionarioOutputDto
+            {
+                Id = funcionario.Id,
+                Ativo = funcionario.Ativo
+            };
         }
 
         public async Task<FuncionarioOutputDto> CreateAsync(FuncionarioInputDto dto)
@@ -30,34 +55,38 @@ namespace _02_Application.Services
             };
 
             await _funcionarioRepository.AddAsync(funcionario);
-
             await _funcionarioRepository.SaveChangesAsync();
 
             return new FuncionarioOutputDto
             {
-                Id = funcionario.Id, 
+                Id = funcionario.Id,
                 Ativo = funcionario.Ativo
             };
         }
 
-        public async Task<IEnumerable<FuncionarioOutputDto>> GetAllAsync()
+        public async Task UpdateAsync(int id, FuncionarioInputDto dto)
         {
-            throw new NotImplementedException();
-        }
+            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
+            if (funcionario == null)
+                throw new KeyNotFoundException($"Funcionário com id {id} não encontrado.");
 
-        public async Task<FuncionarioOutputDto> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
+            funcionario.Nome = dto.Nome;
+            funcionario.Cargo = dto.Cargo;
+            funcionario.Salario = dto.Salario;
+            funcionario.Departamento = dto.Departamento;
 
-        public async Task<FuncionarioOutputDto> UpdateAsync(int id, FuncionarioInputDto dto)
-        {
-            throw new NotImplementedException();
+            _funcionarioRepository.Update(funcionario);
+            await _funcionarioRepository.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var funcionario = await _funcionarioRepository.GetByIdAsync(id);
+            if (funcionario == null)
+                throw new KeyNotFoundException($"Funcionário com id {id} não encontrado.");
+
+            _funcionarioRepository.Delete(funcionario);
+            await _funcionarioRepository.SaveChangesAsync();
         }
     }
 }
