@@ -1,7 +1,5 @@
 ---
 
-### Conteúdo do arquivo `README.md`
-
 ```markdown
 # 🏢 Funcionários API
 
