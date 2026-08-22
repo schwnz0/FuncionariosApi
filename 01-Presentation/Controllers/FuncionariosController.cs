@@ -1,6 +1,7 @@
 ﻿using _02_Application.DTOs;      
 using _02_Application.Interfaces;
 using _02_Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace _01_Presentation.Controllers
@@ -51,6 +52,7 @@ namespace _01_Presentation.Controllers
         /// Cadastra um novo funcionário.
         /// </summary>
         /// <param name="dto">Dados do novo funcionário</param>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(FuncionarioOutputDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -65,6 +67,7 @@ namespace _01_Presentation.Controllers
         /// </summary>
         /// <param name="id">ID do funcionário a ser atualizado</param>
         /// <param name="dto">Novos dados do funcionário</param>
+        [Authorize]
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -86,6 +89,7 @@ namespace _01_Presentation.Controllers
         /// Remove um funcionário pelo seu ID.
         /// </summary>
         /// <param name="id">ID do funcionário a ser removido</param>
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
