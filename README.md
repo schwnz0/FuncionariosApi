@@ -1,414 +1,137 @@
-# FuncionariosApi
+---
 
-API REST para gerenciamento de funcionários desenvolvida com **ASP.NET Core 8** e organizada utilizando os princípios da **Clean Architecture**.
+### Conteúdo do arquivo `README.md`
 
-O projeto foi desenvolvido como parte da avaliação prática do **Módulo 10 — REST APIs com ASP.NET Core**, utilizando Entity Framework Core, SQL Server, Swagger e separação de responsabilidades entre as camadas da aplicação.
+```markdown
+# 🏢 Funcionários API
 
-## 🏗️ Arquitetura
-
-O projeto é dividido em cinco projetos, seguindo a estrutura de Clean Architecture exigida na atividade:
-
-```text
-FuncionariosApi
-│
-├── 01-Presentation
-│   ├── Controllers
-│   └── Program.cs
-│
-├── 02-Application
-│   ├── DTOs
-│   ├── Interfaces
-│   └── Services
-│
-├── 03-Infrastructure
-│   ├── Data
-│   ├── Repositories
-│   └── Migrations
-│
-├── 04-Domain
-│   ├── Entities
-│   └── Interfaces
-│
-├── 05-Tests
-│
-└── FuncionariosApi.slnx
-```
-
-### Dependências entre as camadas
-
-```text
-04-Domain
-    ↑
-02-Application
-    ↑
-01-Presentation
-
-04-Domain
-    ↑
-03-Infrastructure
-
-02-Application
-    ↑
-05-Tests
-```
-
-A camada **Domain** contém as regras e contratos centrais da aplicação, enquanto **Application** concentra DTOs e serviços, **Infrastructure** é responsável pelo acesso aos dados e **Presentation** disponibiliza a API REST.
+API REST desenvolvida em **.NET Core** para o gerenciamento completo de funcionários. O projeto foi construído seguindo os princípios de **Clean Architecture** e boas práticas de desenvolvimento.
 
 ---
 
-## 🚀 Tecnologias utilizadas
+## 🛠️ Tecnologias Utilizadas
 
-* **C#**
-* **.NET 8**
-* **ASP.NET Core Web API**
-* **Entity Framework Core**
-* **SQL Server**
-* **Swagger / OpenAPI**
-* **xUnit**
-* **Clean Architecture**
-* **Dependency Injection**
+- **.NET 8.0 / 9.0** (C#)
+- **ASP.NET Core Web API**
+- **Entity Framework Core** (SQL Server e In-Memory Database)
+- **JWT (JSON Web Token)** para autenticação e autorização
+- **xUnit** para testes unitários
+- **Swagger / OpenAPI** para documentação interativa
 
 ---
 
-## 👨‍💼 Funcionalidades
+## 📐 Estrutura do Projeto (Clean Architecture)
 
-A API permite realizar o CRUD completo de funcionários:
-
-| Método   | Endpoint                 | Descrição                    |
-| -------- | ------------------------ | ---------------------------- |
-| `GET`    | `/api/funcionarios`      | Lista todos os funcionários  |
-| `GET`    | `/api/funcionarios/{id}` | Busca um funcionário pelo ID |
-| `POST`   | `/api/funcionarios`      | Cadastra um novo funcionário |
-| `PUT`    | `/api/funcionarios/{id}` | Atualiza um funcionário      |
-| `DELETE` | `/api/funcionarios/{id}` | Remove um funcionário        |
-
-### Funcionário
-
-A entidade `Funcionario` possui as seguintes propriedades:
+A solução é composta por 5 projetos organizados de acordo com a separação de responsabilidades:
 
 ```text
-Id
-Nome
-Cargo
-Salario
-Departamento
-Ativo
-```
+FuncionariosApi/
+│
+├── 01-Presentation/        # Web API, Controllers (FuncionariosController, AuthController), Middlewares e Swagger
+├── 02-Application/         # DTOs, Interfaces de Serviço e Implementações de Serviços
+├── 03-Infrastructure/      # Contexto do Banco de Dados (AppDbContext) e Repositórios
+├── 04-Domain/              # Entidades do Domínio e Interfaces do Repositório (Livre de dependências externas)
+└── 05-Tests/               # Projeto de Testes Unitários utilizando xUnit e EF Core InMemory
 
-O campo `Ativo` possui valor padrão `true`.
-
-A entidade também utiliza Data Annotations para validação dos dados, incluindo campos obrigatórios e validação do salário.
-
----
-
-## 📦 DTOs
-
-A aplicação utiliza DTOs para separar os dados de entrada e saída da API.
-
-### FuncionarioInputDto
-
-Utilizado para criação e atualização:
-
-```text
-Nome
-Cargo
-Salario
-Departamento
-```
-
-### FuncionarioOutputDto
-
-Utilizado nas respostas da API:
-
-```text
-Id
-Nome
-Cargo
-Salario
-Departamento
-Ativo
 ```
 
 ---
 
-## 🗄️ Banco de dados
+## 🔐 Autenticação e Segurança (JWT)
 
-O projeto utiliza **Entity Framework Core** com **SQL Server**.
+A API utiliza autenticação via **Bearer Token JWT**:
 
-A conexão com o banco é configurada através da propriedade `DefaultConnection` no arquivo:
+* **Endpoints Públicos (`GET`):** Consulta de funcionários liberada sem autenticação.
+* **Endpoints Protegidos (`POST`, `PUT`, `DELETE`):** Exigem cabeçalho de autenticação (`Authorization: Bearer <seu_token>`).
 
-```text
-01-Presentation/appsettings.json
-```
+### Como Obter o Token:
 
-Exemplo:
+Faça uma requisição `POST` para a rota `/api/auth/login`:
 
 ```json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "SUA_CONNECTION_STRING"
-  }
+  "usuario": "admin",
+  "senha": "123456"
 }
+
 ```
-
-> Substitua a connection string de acordo com a configuração do SQL Server utilizada no ambiente local.
-
-O banco utilizado pelo projeto é:
-
-```text
-FuncionariosDB
-```
-
-As migrations do Entity Framework Core estão disponíveis no projeto `03-Infrastructure`.
 
 ---
 
-## 🔧 Configuração e execução
+## 🚀 Como Executar o Projeto
 
-### 1. Pré-requisitos
+### Pré-requisitos
 
-Antes de executar o projeto, certifique-se de possuir:
+* [.NET SDK](https://dotnet.microsoft.com/download) instalado.
+* SQL Server configurado ou ajustado no `appsettings.json`.
 
-* .NET 8 SDK
-* SQL Server ou SQL Server LocalDB
-* Visual Studio 2022 ou Visual Studio Code
+### Passo a Passo
 
-### 2. Clone o repositório
-
+1. **Clonar o Repositório:**
 ```bash
-git clone https://github.com/schwnz0/FuncionariosApi.git
-```
-
-Entre na pasta:
-
-```bash
+git clone [https://github.com/schwnz0/FuncionariosApi.git](https://github.com/schwnz0/FuncionariosApi.git)
 cd FuncionariosApi
+
 ```
 
-### 3. Configure o banco
 
-Verifique a `DefaultConnection` em:
+2. **Configurar a Connection String:**
+No arquivo `01-Presentation/appsettings.json`, ajuste a sua `DefaultConnection`:
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost;Database=FuncionariosDb;Trusted_Connection=True;TrustServerCertificate=True;"
+}
 
-```text
-01-Presentation/appsettings.json
 ```
 
-Configure-a de acordo com seu ambiente SQL Server.
 
-### 4. Execute as migrations
-
-Na raiz da solução, execute:
-
+3. **Executar a Migração / Atualizar Banco:**
 ```bash
 dotnet ef database update --project 03-Infrastructure --startup-project 01-Presentation
+
 ```
 
-Caso o comando `dotnet ef` não esteja disponível, instale a ferramenta:
 
-```bash
-dotnet tool install --global dotnet-ef
-```
-
-### 5. Execute a API
-
+4. **Rodar a API:**
 ```bash
 dotnet run --project 01-Presentation
+
 ```
 
-Após iniciar a aplicação, utilize a URL apresentada pelo terminal para acessar a API e o Swagger.
+
+Acesse a documentação no navegador através do Swagger em: `https://localhost:XXXX/swagger`
 
 ---
 
-## 📖 Swagger
+## 🧪 Executando os Testes Unitários
 
-O projeto possui documentação da API através do **Swagger / OpenAPI**.
+O projeto de testes (`05-Tests`) valida as regras de negócio da camada de aplicação sem depender de um banco de dados real.
 
-A interface permite visualizar e testar os endpoints disponíveis, incluindo:
-
-* parâmetros;
-* modelos de requisição;
-* modelos de resposta;
-* códigos HTTP possíveis;
-* documentação dos endpoints.
-
----
-
-## 📡 Exemplos de requisições
-
-### Criar funcionário
-
-`POST /api/funcionarios`
-
-```json
-{
-  "nome": "João da Silva",
-  "cargo": "Desenvolvedor",
-  "salario": 4500,
-  "departamento": "Tecnologia"
-}
-```
-
-### Buscar todos
-
-`GET /api/funcionarios`
-
-Resposta:
-
-```json
-[
-  {
-    "id": 1,
-    "nome": "João da Silva",
-    "cargo": "Desenvolvedor",
-    "salario": 4500,
-    "departamento": "Tecnologia",
-    "ativo": true
-  }
-]
-```
-
-### Atualizar funcionário
-
-`PUT /api/funcionarios/1`
-
-```json
-{
-  "nome": "João da Silva",
-  "cargo": "Desenvolvedor Full-Stack",
-  "salario": 5500,
-  "departamento": "Tecnologia"
-}
-```
-
-### Excluir funcionário
-
-`DELETE /api/funcionarios/1`
-
-Retorna:
-
-```text
-204 No Content
-```
-
-quando o funcionário é removido com sucesso.
-
----
-
-## 📋 Códigos HTTP
-
-A API utiliza códigos HTTP apropriados para representar o resultado das operações:
-
-| Código | Significado                                 |
-| -----: | ------------------------------------------- |
-|  `200` | Operação realizada com sucesso              |
-|  `201` | Recurso criado com sucesso                  |
-|  `204` | Operação realizada sem conteúdo de resposta |
-|  `400` | Requisição inválida                         |
-|  `404` | Funcionário não encontrado                  |
-
-Os endpoints também possuem `ProducesResponseType` para documentar os possíveis códigos de resposta no Swagger.
-
----
-
-## 🧪 Testes
-
-O projeto possui um projeto separado para testes:
-
-```text
-05-Tests
-```
-
-Os testes utilizam **xUnit** e podem ser executados através de:
+Para rodar os testes via terminal:
 
 ```bash
 dotnet test
+
+```
+
+### Testes Implementados:
+
+* `GetAllAsync_DeveRetornarFuncionariosCadastrados`: Valida a listagem de registros.
+* `GetByIdAsync_IdInexistente_DeveLancarKeyNotFoundException`: Garante o tratamento de erro em pesquisas sem resultado.
+* `CreateAsync_DeveSalvarERetornarFuncionario`: Garante a persistência e geração de ID ao criar um registro.
+
 ```
 
 ---
 
-## 📁 Estrutura dos principais componentes
+### Como salvar no seu projeto:
+1. Vá na raiz da sua solução no Visual Studio (ou pasta principal do projeto).
+2. Abra ou crie o arquivo chamado **`README.md`**.
+3. Substitua o conteúdo pelo código acima e salve.
+4. Faça o **commit** e o **push** para o GitHub:
+   ```bash
+   git add README.md
+   git commit -m "docs: adiciona README detalhado com instrucoes e arquitetura"
+   git push
 
-### Domain
-
-Contém as entidades e interfaces que representam o núcleo da aplicação.
-
-```text
-04-Domain
-├── Entities
-│   └── Funcionario.cs
-└── Interfaces
-    └── IFuncionarioRepository.cs
 ```
-
-### Application
-
-Contém os DTOs, contratos dos serviços e implementação das regras de aplicação.
-
-```text
-02-Application
-├── DTOs
-│   ├── FuncionarioInputDto.cs
-│   └── FuncionarioOutputDto.cs
-├── Interfaces
-│   └── IFuncionarioService.cs
-└── Services
-    └── FuncionarioService.cs
-```
-
-### Infrastructure
-
-Responsável pela persistência dos dados utilizando Entity Framework Core.
-
-```text
-03-Infrastructure
-├── Data
-│   └── AppDbContext.cs
-├── Repositories
-│   └── FuncionarioRepository.cs
-└── Migrations
-```
-
-### Presentation
-
-Responsável pela exposição dos endpoints HTTP.
-
-```text
-01-Presentation
-├── Controllers
-│   └── FuncionariosController.cs
-└── Program.cs
-```
-
----
-
-## 🎯 Objetivo do projeto
-
-O projeto tem como objetivo demonstrar a construção de uma **REST API com ASP.NET Core**, aplicando conceitos de:
-
-* Clean Architecture;
-* separação de responsabilidades;
-* DTOs;
-* Repository Pattern;
-* Service Layer;
-* Entity Framework Core;
-* Dependency Injection;
-* migrations;
-* documentação OpenAPI/Swagger;
-* códigos de status HTTP;
-* validação de dados.
-
----
-
-## 👤 Autor
-
-**Everson Oliveira**
-
-GitHub: [@schwnz0](https://github.com/schwnz0)
-
-LinkedIn: [Everson Oliveira](https://www.linkedin.com/in/everson-oliveira-dev11/)
-
----
-
-## 📄 Licença
-
-Projeto desenvolvido para fins acadêmicos.
