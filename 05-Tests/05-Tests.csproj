@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.30" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
@@ -19,6 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\02-Application\02-Application.csproj" />
+    <ProjectReference Include="..\03-Infrastructure\03-Infrastructure.csproj" />
+    <ProjectReference Include="..\04-Domain\04-Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
