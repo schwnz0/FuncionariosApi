@@ -59,7 +59,7 @@ builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
 builder.Services.AddScoped<IFuncionarioService, FuncionarioService>();
 
 var jwtSecretKey = builder.Configuration["JwtSettings:SecretKey"]
-    ?? throw new InvalidOperationException("Chave JWT não configurada no appsettings.json.");
+    ?? throw new InvalidOperationException("Chave JWT não configurada.");
 
 var keyBytes = Encoding.UTF8.GetBytes(jwtSecretKey);
 
