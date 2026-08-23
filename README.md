@@ -101,7 +101,7 @@ A entidade também utiliza validações para garantir a consistência dos dados 
 
 ## 📦 DTOs
 
-A aplicação utiliza Data Transfer Objects (DTOs) para separar os modelos utilizados nas requisições e respostas.
+A aplicação utiliza **Data Transfer Objects (DTOs)** para separar os modelos utilizados nas requisições e respostas.
 
 ### FuncionarioInputDto
 
@@ -172,6 +172,8 @@ Com o seguinte corpo:
 
 Com as credenciais corretas, a API retorna um token JWT.
 
+> **Observação:** as credenciais acima são apenas um exemplo para demonstração. Utilize as credenciais configuradas no ambiente da aplicação.
+
 O token deve ser enviado nas requisições protegidas através do cabeçalho:
 
 ```http
@@ -197,9 +199,9 @@ Bearer SEU_TOKEN
 
 # 🔒 Configuração da chave JWT
 
-A chave secreta utilizada para assinar os tokens **não deve ser armazenada diretamente no repositório público**.
+A chave secreta utilizada para assinar os tokens JWT **não é armazenada no `appsettings.json` nem versionada no GitHub**.
 
-O projeto utiliza **.NET User Secrets** para armazenar a chave de desenvolvimento localmente.
+Durante o desenvolvimento, o projeto utiliza **.NET User Secrets** para armazenar a chave localmente.
 
 ### Configurar User Secrets
 
@@ -209,35 +211,33 @@ Entre no diretório do projeto Presentation:
 cd 01-Presentation
 ```
 
-Inicialize o User Secrets:
+Caso o User Secrets ainda não esteja inicializado:
 
 ```bash
 dotnet user-secrets init
 ```
 
-Defina a chave:
+Configure a chave JWT:
 
 ```bash
 dotnet user-secrets set "JwtSettings:SecretKey" "SUA-CHAVE-SECRETA"
 ```
 
-Para verificar a configuração:
+Para verificar as configurações cadastradas:
 
 ```bash
 dotnet user-secrets list
 ```
 
-O arquivo `appsettings.json` pode manter apenas um valor de exemplo:
+A configuração esperada é:
 
-```json
-{
-  "JwtSettings": {
-    "SecretKey": "CHANGE-ME"
-  }
-}
+```text
+JwtSettings:SecretKey = SUA-CHAVE-SECRETA
 ```
 
-> ⚠️ **Nunca publique uma chave secreta real no GitHub.**
+A chave real é armazenada localmente pelo .NET User Secrets e não deve ser adicionada ao repositório.
+
+> ⚠️ **Nunca publique uma chave JWT real no GitHub.**
 
 ---
 
@@ -262,6 +262,8 @@ Exemplo:
 ```
 
 > A connection string deve ser ajustada de acordo com a configuração do SQL Server utilizada no ambiente local.
+
+As configurações não sensíveis da aplicação permanecem no `appsettings.json`, enquanto informações sensíveis, como a chave JWT, são armazenadas separadamente através do **.NET User Secrets**.
 
 ---
 
@@ -318,6 +320,12 @@ Configure o User Secret:
 dotnet user-secrets set "JwtSettings:SecretKey" "SUA-CHAVE-SECRETA"
 ```
 
+Verifique se a chave foi cadastrada:
+
+```bash
+dotnet user-secrets list
+```
+
 Depois volte para a raiz do projeto:
 
 ```bash
@@ -334,7 +342,7 @@ Execute:
 dotnet ef database update --project 03-Infrastructure --startup-project 01-Presentation
 ```
 
-Esse comando aplica as migrations existentes e cria/atualiza o banco de dados.
+Esse comando aplica as migrations existentes e cria ou atualiza o banco de dados.
 
 ---
 
